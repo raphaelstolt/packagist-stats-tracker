@@ -1,11 +1,5 @@
 # packagist-stats-tracker
 
-<p align="center">
-    <img src="pst-logo.png" 
-         title="pst: packagist-stats-tracker"
-         alt="packagist-stats-tracker logo">
-</p>
-
 A CLI tool for tracking Packagist package download statistics over time.
 
 `packagist-stats-tracker` collects download statistics for the PHP packages you care about, stores daily snapshots locally
