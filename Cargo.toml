@@ -6,6 +6,7 @@ description = "Track download statistics for Composer packages from Packagist"
 license = "MIT"
 repository = "https://github.com/raphaelstolt/packagist-stats-tracker"
 readme = "README.md"
+logo = "pst-logo.png"
 keywords = ["packagist", "composer", "cli", "statistics"]
 categories = ["command-line-utilities"]
 exclude = [".gitignore", "tests/", "CONTRIBUTING.md", "Justfile", "CHANGELOG.md"]
