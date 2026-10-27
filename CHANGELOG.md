@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `package add` command now accepts multiple packages at once (e.g., `package add monolog/monolog symfony/console`).
+
 ## [0.1.4] - 2026-10-27
 
 ### Fixed

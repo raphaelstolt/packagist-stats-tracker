@@ -8,49 +8,53 @@ use crate::db;
 
 #[derive(Args)]
 pub struct AddArgs {
-    /// Package name in vendor/name format (e.g., monolog/monolog)
-    pub package: String,
+    /// Package name(s) in vendor/name format (e.g., monolog/monolog)
+    #[arg(num_args = 1.., required = true)]
+    pub packages: Vec<String>,
 }
 
 impl AddArgs {
     pub async fn run(&self) -> Result<()> {
-        let name = self.package.trim();
+        let conn = db::connect()?;
 
-        // Validate package name format
-        if !name.contains('/') {
-            bail!(
-                "Invalid package name '{}'. Expected format: vendor/package (e.g., monolog/monolog)",
-                name
+        for package in &self.packages {
+            let name = package.trim();
+
+            // Validate package name format
+            if !name.contains('/') {
+                bail!(
+                    "Invalid package name '{}'. Expected format: vendor/package (e.g., monolog/monolog)",
+                    name
+                );
+            }
+
+            // Check if already tracked
+            if db::package_exists(&conn, name)? {
+                println!("Package '{}' is already tracked. Updating...", name);
+            } else {
+                println!("Fetching package '{}' from Packagist...", name);
+            }
+
+            // Fetch from Packagist API
+            let tracked = api::fetch_package(name)
+                .await
+                .with_context(|| format!("Failed to fetch package '{}'", name))?;
+
+            // Store in database
+            db::upsert_package(&conn, &tracked)
+                .with_context(|| format!("Failed to save package '{}'", name))?;
+
+            // Collect initial snapshot
+            collect_package(&conn, name)
+                .await
+                .with_context(|| format!("Failed to collect initial snapshot for '{}'", name))?;
+
+            println!(
+                "✓ '{}' tracked (version: {}, downloads: {}, daily: {})",
+                tracked.name, tracked.latest_version, tracked.downloads, tracked.daily
             );
         }
 
-        let conn = db::connect()?;
-
-        // Check if already tracked
-        if db::package_exists(&conn, name)? {
-            println!("Package '{}' is already tracked. Updating...", name);
-        } else {
-            println!("Fetching package '{}' from Packagist...", name);
-        }
-
-        // Fetch from Packagist API
-        let tracked = api::fetch_package(name)
-            .await
-            .with_context(|| format!("Failed to fetch package '{}'", name))?;
-
-        // Store in database
-        db::upsert_package(&conn, &tracked)
-            .with_context(|| format!("Failed to save package '{}'", name))?;
-
-        // Collect initial snapshot
-        collect_package(&conn, name)
-            .await
-            .with_context(|| format!("Failed to collect initial snapshot for '{}'", name))?;
-
-        println!(
-            "✓ '{}' tracked (version: {}, downloads: {}, daily: {})",
-            tracked.name, tracked.latest_version, tracked.downloads, tracked.daily
-        );
         Ok(())
     }
 }
@@ -99,7 +103,7 @@ mod tests {
     #[test]
     fn add_args_validates_package_name_format() {
         let args = AddArgs {
-            package: "invalidname".to_string(),
+            packages: vec!["invalidname".to_string()],
         };
         let rt = tokio::runtime::Builder::new_current_thread()
             .enable_all()

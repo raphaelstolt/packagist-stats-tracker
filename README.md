@@ -52,8 +52,14 @@ This places the `packagist-stats-tracker` binary in `~/.cargo/bin`, which should
 packagist-stats-tracker package add monolog/monolog
 ```
 
-Adds the package to your tracking list and immediately collects an initial snapshot, so you don't need to run
-`collect` separately after adding a new package.
+Add multiple packages at once:
+
+```bash
+packagist-stats-tracker package add monolog/monolog symfony/console guzzlehttp/guzzle
+```
+
+Adds the package(s) to your tracking list and immediately collects an initial snapshot for each, so you don't need to
+run `collect` separately after adding new packages.
 
 ### List tracked packages
 
