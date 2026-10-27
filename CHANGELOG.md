@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `package remove` command to remove packages.
+
 ## [0.2.0] - 2026-10-27
 
 ### Added

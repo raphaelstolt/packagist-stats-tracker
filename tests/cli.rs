@@ -257,3 +257,63 @@ fn main_help_shows_import() {
         .success()
         .stdout(predicates::str::contains("import"));
 }
+
+/// The `package remove` subcommand should show help
+#[test]
+fn package_remove_shows_help() {
+    let mut cmd = Command::cargo_bin("packagist-stats-tracker").unwrap();
+    cmd.args(["package", "remove", "--help"])
+        .assert()
+        .success()
+        .stdout(predicates::str::contains("Remove a package"));
+}
+
+/// The `package remove` subcommand should require a package argument
+#[test]
+fn package_remove_requires_argument() {
+    let mut cmd = Command::cargo_bin("packagist-stats-tracker").unwrap();
+    cmd.args(["package", "remove"])
+        .assert()
+        .failure()
+        .stderr(predicates::str::contains("required"));
+}
+
+/// The `package remove` subcommand should reject invalid package names
+#[test]
+fn package_remove_rejects_invalid_name() {
+    let mut cmd = Command::cargo_bin("packagist-stats-tracker").unwrap();
+    cmd.args(["package", "remove", "invalidname"])
+        .assert()
+        .failure()
+        .stderr(predicates::str::contains("Invalid package name"));
+}
+
+/// The `package remove` subcommand should fail when package is not tracked
+#[test]
+fn package_remove_not_tracked() {
+    let mut cmd = Command::cargo_bin("packagist-stats-tracker").unwrap();
+    cmd.args(["package", "remove", "vendor/nonexistent"])
+        .assert()
+        .failure()
+        .stderr(predicates::str::contains("is not tracked"));
+}
+
+/// The `package` subcommand help should list remove
+#[test]
+fn package_subcommand_shows_remove() {
+    let mut cmd = Command::cargo_bin("packagist-stats-tracker").unwrap();
+    cmd.args(["package", "--help"])
+        .assert()
+        .success()
+        .stdout(predicates::str::contains("remove"));
+}
+
+/// The main help should list the package command (which includes remove)
+#[test]
+fn main_help_shows_package() {
+    let mut cmd = Command::cargo_bin("packagist-stats-tracker").unwrap();
+    cmd.arg("--help")
+        .assert()
+        .success()
+        .stdout(predicates::str::contains("package"));
+}

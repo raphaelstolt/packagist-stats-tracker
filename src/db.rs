@@ -103,6 +103,28 @@ pub fn package_exists(conn: &Connection, name: &str) -> Result<bool> {
     Ok(exists)
 }
 
+/// Remove a tracked package and all its snapshots.
+pub fn remove_package(conn: &Connection, name: &str) -> Result<()> {
+    conn.execute(
+        "DELETE FROM snapshots WHERE name = ?1",
+        rusqlite::params![name],
+    )
+    .context("Failed to delete snapshots")?;
+
+    let rows = conn
+        .execute(
+            "DELETE FROM packages WHERE name = ?1",
+            rusqlite::params![name],
+        )
+        .context("Failed to delete package")?;
+
+    if rows == 0 {
+        anyhow::bail!("Package '{}' is not tracked", name);
+    }
+
+    Ok(())
+}
+
 /// List all tracked packages.
 pub fn list_packages(conn: &Connection) -> Result<Vec<TrackedPackage>> {
     let mut stmt = conn

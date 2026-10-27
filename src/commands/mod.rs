@@ -14,7 +14,7 @@ use self::export::ExportArgs;
 use self::history::HistoryArgs;
 use self::import::ImportArgs;
 use self::overall::OverallArgs;
-use self::package::{AddArgs, ListArgs as PackageListArgs};
+use self::package::{AddArgs, ListArgs as PackageListArgs, RemoveArgs};
 
 #[derive(Subcommand)]
 pub enum PackageCommands {
@@ -22,6 +22,8 @@ pub enum PackageCommands {
     Add(AddArgs),
     /// List all tracked packages
     List(PackageListArgs),
+    /// Remove a package from tracking
+    Remove(RemoveArgs),
 }
 
 impl PackageCommands {
@@ -29,6 +31,7 @@ impl PackageCommands {
         match self {
             PackageCommands::Add(args) => args.run().await,
             PackageCommands::List(args) => args.run(),
+            PackageCommands::Remove(args) => args.run(),
         }
     }
 }
@@ -45,8 +48,9 @@ impl PackageArgs {
             Some(cmd) => cmd.run().await,
             None => {
                 println!("Usage: packagist-stats-tracker package <COMMAND>\n\nCommands:");
-                println!("  add   Add a package to track");
-                println!("  list  List all tracked packages");
+                println!("  add    Add a package to track");
+                println!("  list   List all tracked packages");
+                println!("  remove Remove a package from tracking");
                 Ok(())
             }
         }

@@ -16,6 +16,7 @@ time instead of repeatedly checking individual Packagist pages.
 ## Features
 
 - Add packages to your tracking list.
+- Remove packages from your tracking list.
 - List tracked packages.
 - Collect statistics for all tracked packages.
 - Store daily snapshots locally.
@@ -66,6 +67,21 @@ run `collect` separately after adding new packages.
 ```bash
 packagist-stats-tracker package list
 ```
+
+### Remove a package
+
+```bash
+packagist-stats-tracker package remove monolog/monolog
+```
+
+Remove multiple packages at once:
+
+```bash
+packagist-stats-tracker package remove monolog/monolog symfony/console
+```
+
+Removes the package(s) from your tracking list and deletes all associated historical snapshots. If a package is not
+tracked, the command will fail with an error.
 
 ### Collect statistics
 

@@ -95,6 +95,39 @@ impl ListArgs {
     }
 }
 
+#[derive(Args)]
+pub struct RemoveArgs {
+    /// Package name(s) in vendor/name format (e.g., monolog/monolog)
+    #[arg(num_args = 1.., required = true)]
+    pub packages: Vec<String>,
+}
+
+impl RemoveArgs {
+    pub fn run(&self) -> Result<()> {
+        let conn = db::connect()?;
+
+        for package in &self.packages {
+            let name = package.trim();
+
+            // Validate package name format
+            if !name.contains('/') {
+                bail!(
+                    "Invalid package name '{}'. Expected format: vendor/package (e.g., monolog/monolog)",
+                    name
+                );
+            }
+
+            // Remove from database
+            db::remove_package(&conn, name)
+                .with_context(|| format!("Failed to remove package '{}'", name))?;
+
+            println!("✓ '{}' removed", name);
+        }
+
+        Ok(())
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -159,5 +192,20 @@ mod tests {
         assert!(output.contains("3.8.1"));
         assert!(output.contains("123456"));
         assert!(output.contains("500"));
+    }
+
+    #[test]
+    fn remove_args_validates_package_name_format() {
+        let args = RemoveArgs {
+            packages: vec!["invalidname".to_string()],
+        };
+        let result = args.run();
+        assert!(result.is_err());
+        assert!(
+            result
+                .unwrap_err()
+                .to_string()
+                .contains("Invalid package name")
+        );
     }
 }
