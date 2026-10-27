@@ -34,7 +34,7 @@ time instead of repeatedly checking individual Packagist pages.
 cargo install packagist-stats-tracker
 ```
 
-### From Source
+### From source
 
 ```bash
 git clone git@github.com:raphaelstolt/packagist-stats-tracker.git
