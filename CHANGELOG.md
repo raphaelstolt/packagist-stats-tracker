@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- `history` command now calculates dates using cross-platform Rust arithmetic instead of macOS-only `date -v`, so it
+works correctly on Linux (including GitHub Actions).
+
 ## [0.1.3] - 2026-10-26
 
 ### Fixed

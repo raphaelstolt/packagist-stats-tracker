@@ -50,8 +50,9 @@ fn parse_period_days(period: &str) -> Result<u32> {
 
 /// Calculate the start date by subtracting days from today.
 fn get_start_date(days_ago: u32) -> Result<String> {
+    // Get today's date from the system
     let output = std::process::Command::new("date")
-        .args(["-v", &format!("-{}d", days_ago), "+%Y-%m-%d"])
+        .arg("+%Y-%m-%d")
         .output()
         .context("Failed to run date command")?;
 
@@ -59,16 +60,70 @@ fn get_start_date(days_ago: u32) -> Result<String> {
         anyhow::bail!("date command failed");
     }
 
-    let date_str = String::from_utf8(output.stdout)
+    let today_str = String::from_utf8(output.stdout)
         .context("Invalid date output")?
         .trim()
         .to_string();
 
-    if date_str.is_empty() {
+    if today_str.is_empty() {
         anyhow::bail!("Empty date output");
     }
 
-    Ok(date_str)
+    // Parse today's date
+    let parts: Vec<&str> = today_str.split('-').collect();
+    if parts.len() != 3 {
+        anyhow::bail!("Invalid date format: {}", today_str);
+    }
+
+    let year: i32 = parts[0].parse().context("Invalid year")?;
+    let month: u32 = parts[1].parse().context("Invalid month")?;
+    let day: u32 = parts[2].parse().context("Invalid day")?;
+
+    // Calculate the start date by subtracting days using a simple approach
+    let start_date =
+        subtract_days(year, month, day, days_ago).context("Failed to calculate start date")?;
+
+    Ok(start_date)
+}
+
+/// Subtract days from a date and return the result as YYYY-MM-DD.
+fn subtract_days(year: i32, month: u32, day: u32, days_to_subtract: u32) -> Result<String> {
+    let mut y = year;
+    let mut m = month as i32;
+    let mut d = day as i32 - days_to_subtract as i32;
+
+    // Handle day underflow
+    while d < 1 {
+        m -= 1;
+        if m < 1 {
+            m = 12;
+            y -= 1;
+        }
+        d += days_in_month(y, m as u32) as i32;
+    }
+
+    Ok(format!("{:04}-{:02}-{:02}", y, m, d))
+}
+
+/// Return the number of days in a given month/year.
+fn days_in_month(year: i32, month: u32) -> u32 {
+    match month {
+        1 | 3 | 5 | 7 | 8 | 10 | 12 => 31,
+        4 | 6 | 9 | 11 => 30,
+        2 => {
+            if is_leap_year(year) {
+                29
+            } else {
+                28
+            }
+        }
+        _ => 0,
+    }
+}
+
+/// Check if a year is a leap year.
+fn is_leap_year(year: i32) -> bool {
+    (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)
 }
 
 impl HistoryArgs {
