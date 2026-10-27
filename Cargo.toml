@@ -8,7 +8,7 @@ repository = "https://github.com/raphaelstolt/packagist-stats-tracker"
 readme = "README.md"
 keywords = ["packagist", "composer", "cli", "statistics"]
 categories = ["command-line-utilities"]
-exclude = [".gitignore", "tests/", "CONTRIBUTING.md", "Justfile", "CHANGELOG.md"]
+exclude = [".gitignore", ".github/", "tests/", "CONTRIBUTING.md", "Justfile", "CHANGELOG.md"]
 
 [dependencies]
 anyhow = "1.0.104"
