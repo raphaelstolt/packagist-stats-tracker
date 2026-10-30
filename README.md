@@ -241,6 +241,17 @@ No separate database server is required.
 Run `collect` regularly—such as from cron or another scheduler—to keep the historical data up to date. The history
 available to the tool depends on when you started collecting snapshots.
 
+## AI disclaimer
+
+This package is developed with the assistance of Artificial Intelligence (AI). AI tools are used throughout the development
+process, including code generation, documentation, testing, and maintenance.
+
+While reasonable care is taken to review and validate AI-generated contributions, AI-generated code is not inherently correct,
+secure, or free of defects. All contributions remain subject to human review and project quality standards.
+
+As with any software, use this package at your own risk. No guarantee is made regarding its fitness for a particular purpose,
+and the maintainers assume no liability for damages resulting from its use.
+
 ## Development
 
 Build the project in debug mode:
